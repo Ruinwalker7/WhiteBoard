@@ -11,11 +11,11 @@ import java.net.Socket;
 
 public class MainServer {
     public static void main(String[] args) {
-        try
-        {
+
+        try {
             BeautyEyeLNFHelper.frameBorderStyle=BeautyEyeLNFHelper.frameBorderStyle.generalNoTranslucencyShadow;
             BeautyEyeLNFHelper.launchBeautyEyeLNF();
-            BeautyEyeLNFHelper.translucencyAtFrameInactive = false;
+            BeautyEyeLNFHelper.translucencyAtFrameInactive = true;
             UIManager.put("RootPane.setupButtonVisible", false);
         }
         catch(Exception e)
@@ -50,7 +50,6 @@ public class MainServer {
 //                }
 //            }
 //        }).start();
-
 
     new  ServerFrame();
     }

@@ -10,7 +10,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/WhiteBroad/src/beautyeye_lnf.jar!/" />
+          <root url="jar://$MODULE_DIR$/WhiteBroad/src/lib/ninepatch4j.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
