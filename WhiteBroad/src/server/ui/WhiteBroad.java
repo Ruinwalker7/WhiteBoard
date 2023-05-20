@@ -9,7 +9,7 @@ public class WhiteBroad extends JPanel implements Runnable {
 
     public void run()   //进程run()方法重写
     {
-        this.setVisible(true);
+        this.setBackground(new Color(255,255,255));
         Graphics g=this.getGraphics();   //Graphics对象 g的获取
         System.out.println(g);
         DrawListener dl = new DrawListener(g);// 实例化DrawListener类的对象

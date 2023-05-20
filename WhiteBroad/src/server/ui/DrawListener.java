@@ -72,11 +72,11 @@ public class DrawListener implements MouseListener, MouseMotionListener,
             y2 = e.getY();
         }
         // 两个坐标的得到了，可以用于直线的绘制，调用画布对象g方法，在界面上面画出直线
-        if ("画直线".equals(type)) {
+        if ("直线".equals(type)) {
             g.setColor(color);
             g.drawLine(x1, y1, x2, y2);
         }
-        if ("画椭圆".equals(type)) {
+        if ("椭圆".equals(type)) {
             g.setColor(color);
             g.drawOval(x1, y1, x2, y2);
         }
@@ -108,7 +108,7 @@ public class DrawListener implements MouseListener, MouseMotionListener,
 
     // 鼠标拖动时的处理方法
     public void mouseDragged(MouseEvent e) {
-        if ("画曲线".equals(type)) {
+        if ("曲线".equals(type)) {
             int x, y;
             x = e.getX();
             y = e.getY();

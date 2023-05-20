@@ -75,7 +75,8 @@ public class BEButtonUI extends BasicButtonUI
 		lightBlue,
 		
 		/** 深蓝色按钮. */
-		blue
+		blue,
+		black
 	}
 	
 	/**
