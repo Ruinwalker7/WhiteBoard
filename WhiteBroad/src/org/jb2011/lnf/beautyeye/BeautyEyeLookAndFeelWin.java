@@ -160,12 +160,12 @@ public class BeautyEyeLookAndFeelWin extends WindowsLookAndFeel
 			JFrame.setDefaultLookAndFeelDecorated(false);
 			JDialog.setDefaultLookAndFeelDecorated(false);
 		}
-		else
-		{
-			JFrame.setDefaultLookAndFeelDecorated(true);
-			JDialog.setDefaultLookAndFeelDecorated(true);
-		}
-
-		UIManager.put("swing.aatext", Boolean.FALSE);
+//		else
+//		{
+//			JFrame.setDefaultLookAndFeelDecorated(true);
+//			JDialog.setDefaultLookAndFeelDecorated(true);
+//		}
+//
+//		UIManager.put("swing.aatext", Boolean.FALSE);
 	}
 }
