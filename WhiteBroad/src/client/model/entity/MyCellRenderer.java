@@ -12,9 +12,7 @@ public class MyCellRenderer extends JLabel implements ListCellRenderer {
 
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         User user = (User)value;
-        String name = user.getNickname() + "(" + user.getId() + ")";
-        setText(name);
-        setIcon(user.getHeadIcon());
+        setText(user.getNickname());
         if (isSelected) {
             setBackground(list.getSelectionBackground());
             setForeground(list.getSelectionForeground());

@@ -1,7 +1,7 @@
 package client.util;
 
 import client.DataBuffer;
-import client.ui.ChatFrame;
+import client.ui.ClientFrame;
 import common.entity.Request;
 import common.entity.Response;
 
@@ -46,7 +46,7 @@ public class ClientUtil {
 
     /** 把指定文本添加到消息列表文本域中 */
     public static void appendTxt2MsgListArea(String txt) {
-        ChatFrame.msgListArea.append(txt);
-        ChatFrame.msgListArea.setCaretPosition(ChatFrame.msgListArea.getDocument().getLength());
+        ClientFrame.msgListArea.append(txt);
+        ClientFrame.msgListArea.setCaretPosition(ClientFrame.msgListArea.getDocument().getLength());
     }
 }

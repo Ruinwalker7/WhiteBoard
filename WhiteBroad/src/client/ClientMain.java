@@ -1,6 +1,6 @@
 package client;
 
-import client.ui.LoginFrame;
+import client.ui.ClientFrame;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 
 import javax.swing.*;
@@ -24,7 +24,7 @@ public class ClientMain {
         {
             System.out.println("加载炫彩皮肤失败！");
         }
-        new LoginFrame();  //启动登录窗体
+        new ClientFrame();  //启动登录窗体
     }
 
     /** 连接到服务器 */

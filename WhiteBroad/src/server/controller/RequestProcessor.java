@@ -3,8 +3,7 @@ package server.controller;
 import common.entity.*;
 import server.DataBuffer;
 import server.OnlineClientIOCache;
-import server.model.service.UserService;
-
+import server.ServerUtil;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -33,7 +32,7 @@ public class RequestProcessor implements Runnable {
                 Request request = (Request)currentClientIOCache.getOis().readObject();
                 System.out.println("Server读取了客户端的请求:" + request.getAction());
                 String actionName = request.getAction();   //获取请求中的动作
-                if(actionName.equals("userLogin")){  //登录
+                if(actionName.equals("Login")){  //登录
                     login(currentClientIOCache, request);
                 }else if("chat".equals(actionName)){       //聊天
                     chat(request);
@@ -55,8 +54,8 @@ public class RequestProcessor implements Runnable {
                 + ":" + currentClientSocket.getPort() + "走了");
 
         User user = (User)request.getAttribute("user");
-        DataBuffer.onlineUserIOCacheMap.remove(user.getId());
-        DataBuffer.onlineUsersMap.remove(user.getId());
+        DataBuffer.onlineUserIOCacheMap.remove(user.getNickname());
+        DataBuffer.onlineUsersMap.remove(user.getNickname());
         Response response = new Response();
         response.setType(ResponseType.LOGOUT);
         response.setData("logoutUser", user);
@@ -64,27 +63,25 @@ public class RequestProcessor implements Runnable {
         oio.getOos().flush();
         currentClientSocket.close();
 
-        DataBuffer.onlineUserTableModel.remove(user.getId()); //把当前下线用户从在线用户表Model中删除
+        DataBuffer.onlineUserTableModel.remove(user.getNickname()); //把当前下线用户从在线用户表Model中删除
         iteratorResponse(response);
     }
 
 
     /** 登录 */
     public void login(OnlineClientIOCache currentClientIO, Request request) throws IOException {
-        String idStr = (String)request.getAttribute("id");
-        String password = (String) request.getAttribute("password");
-        UserService userService = new UserService();
-        User user = userService.login(Long.parseLong(idStr), password);
+
+        User user =(User)request.getAttribute("user");
 
         Response response = new Response();  //创建一个响应对象
         if(null != user){
-            if(DataBuffer.onlineUsersMap.containsKey(user.getId())){ //用户已经登录了
+            if(DataBuffer.onlineUsersMap.containsKey(user.getNickname())){ //用户已经登录了
                 response.setStatus(ResponseStatus.OK);
                 response.setData("msg", "该 用户已经在别处上线了！");
                 currentClientIO.getOos().writeObject(response);  //把响应对象往客户端写
                 currentClientIO.getOos().flush();
             }else { //正确登录
-                DataBuffer.onlineUsersMap.put(user.getId(), user); //添加到在线用户
+                DataBuffer.onlineUsersMap.put(user.getNickname(), user); //添加到在线用户
 
                 //设置在线用户
                 response.setData("onlineUsers",
@@ -102,13 +99,12 @@ public class RequestProcessor implements Runnable {
                 iteratorResponse(response2);
 
                 //把当前上线的用户IO添加到缓存Map中
-                DataBuffer.onlineUserIOCacheMap.put(user.getId(),currentClientIO);
+                DataBuffer.onlineUserIOCacheMap.put(user.getNickname(),currentClientIO);
 
                 //把当前上线用户添加到OnlineUserTableModel中
                 DataBuffer.onlineUserTableModel.add(
-                        new String[]{String.valueOf(user.getId()),
-                                user.getNickname(),
-                                String.valueOf(user.getSex())});
+                        new String[]{String.valueOf(user.getNickname()),
+                                user.getNickname()});
             }
         }else{ //登录失败
             response.setStatus(ResponseStatus.OK);
@@ -125,45 +121,16 @@ public class RequestProcessor implements Runnable {
         response.setStatus(ResponseStatus.OK);
         response.setType(ResponseType.CHAT);
         response.setData("txtMsg", msg);
-
-        if(msg.getToUser() != null){ //私聊:只给私聊的对象返回响应
-            System.out.println(msg.getToUser());
-            OnlineClientIOCache io = DataBuffer.onlineUserIOCacheMap.get(msg.getToUser().getId());
-            sendResponse(io, response);
-        }else{  //群聊:给除了发消息的所有客户端都返回响应
-            for(Long id : DataBuffer.onlineUserIOCacheMap.keySet()){
-                if(msg.getFromUser().getId() == id ){continue; }
-                sendResponse(DataBuffer.onlineUserIOCacheMap.get(id), response);
-            }
-        }
-    }
-
-    /**广播*/
-    public static void board(String str) throws IOException {
-        User user = new User(1,"admin");
-        Message msg = new Message();
-        msg.setFromUser(user);
-        msg.setSendTime(new Date());
-
-        DateFormat df = new SimpleDateFormat("HH:mm:ss");
-        StringBuffer sb = new StringBuffer();
-        sb.append(" ").append(df.format(msg.getSendTime())).append(" ");
-        sb.append("系统通知\n  "+str+"\n");
-        msg.setMessage(sb.toString());
-
-        Response response = new Response();
-        response.setStatus(ResponseStatus.OK);
-        response.setType(ResponseType.BOARD);
-        response.setData("txtMsg", msg);
-
-        for (Long id : DataBuffer.onlineUserIOCacheMap.keySet()) {
-            sendResponse_sys(DataBuffer.onlineUserIOCacheMap.get(id), response);
+        ServerUtil.appendTxt2MsgListArea(msg.getMessage());
+        for(String name : DataBuffer.onlineUserIOCacheMap.keySet()){
+            if(msg.getFromUser().getNickname() == name ){continue; }
+            sendResponse(DataBuffer.onlineUserIOCacheMap.get(name), response);
         }
     }
 
     /** 踢除用户 */
     public static void remove(User user_) throws IOException{
-        User user = new User(1,"admin");
+        User user = new User("老师");
         Message msg = new Message();
         msg.setFromUser(user);
         msg.setSendTime(new Date());
@@ -180,7 +147,7 @@ public class RequestProcessor implements Runnable {
         response.setType(ResponseType.REMOVE);
         response.setData("txtMsg", msg);
 
-        OnlineClientIOCache io = DataBuffer.onlineUserIOCacheMap.get(msg.getToUser().getId());
+        OnlineClientIOCache io = DataBuffer.onlineUserIOCacheMap.get(msg.getToUser().getNickname());
         try{
             sendResponse_sys(io, response);
         }
@@ -191,7 +158,7 @@ public class RequestProcessor implements Runnable {
 
     /** 私信 */
     public static void chat_sys(String str,User user_) throws IOException{
-        User user = new User(1,"admin");
+        User user = new User("admin");
         Message msg = new Message();
         msg.setFromUser(user);
         msg.setSendTime(new Date());
@@ -208,7 +175,7 @@ public class RequestProcessor implements Runnable {
         response.setType(ResponseType.CHAT);
         response.setData("txtMsg", msg);
 
-        OnlineClientIOCache io = DataBuffer.onlineUserIOCacheMap.get(msg.getToUser().getId());
+        OnlineClientIOCache io = DataBuffer.onlineUserIOCacheMap.get(msg.getToUser().getNickname());
         sendResponse_sys(io, response);
     }
 
@@ -236,9 +203,9 @@ public class RequestProcessor implements Runnable {
             oos.flush();
         }catch (IOException e){
             Message msg = (Message)response.getData("txtMsg");
-            DataBuffer.onlineUserIOCacheMap.remove(msg.getToUser().getId());
-            DataBuffer.onlineUsersMap.remove(msg.getToUser().getId());
-            DataBuffer.onlineUserTableModel.remove(msg.getToUser().getId());
+            DataBuffer.onlineUserIOCacheMap.remove(msg.getToUser().getNickname());
+            DataBuffer.onlineUsersMap.remove(msg.getToUser().getNickname());
+            DataBuffer.onlineUserTableModel.remove(msg.getToUser().getNickname());
         }
 
     }

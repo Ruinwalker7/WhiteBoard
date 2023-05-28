@@ -175,43 +175,43 @@ public class BeautyEyeLNFHelper
 		//自定义窗口的L&F实现
 //		org.jb2011.lnf.beautyeye.ch1_titlepane.__UI__.uiImpl();
 //		//自定义JTabbedPane的L&F实现
-//		org.jb2011.lnf.beautyeye.ch2_tab.__UI__.uiImpl();
+		org.jb2011.lnf.beautyeye.ch2_tab.__UI__.uiImpl();
 ////		//自定义按钮的L&F实现
 		org.jb2011.lnf.beautyeye.ch3_button.__UI__.uiImpl();
 ////		//各种杂七杂八的设置
-//		org.jb2011.lnf.beautyeye.ch_x.__UI__.uiImpl();
+		org.jb2011.lnf.beautyeye.ch_x.__UI__.uiImpl();
 ////		//自定义滚动条的L&F实现
-//		org.jb2011.lnf.beautyeye.ch4_scroll.__UI__.uiImpl();
+		org.jb2011.lnf.beautyeye.ch4_scroll.__UI__.uiImpl();
 ////		//自定义表格头的L&F实现
-//		org.jb2011.lnf.beautyeye.ch5_table.__UI__.uiImpl();
+		org.jb2011.lnf.beautyeye.ch5_table.__UI__.uiImpl();
 ////		//自定义文本组件的L&F实现
-//		org.jb2011.lnf.beautyeye.ch6_textcoms.__UI__.uiImpl();
+		org.jb2011.lnf.beautyeye.ch6_textcoms.__UI__.uiImpl();
 ////		//自定义弹出组件（包括toolTip组件和弹出菜单等）的L&F实现
-//		org.jb2011.lnf.beautyeye.ch7_popup.__UI__.uiImpl();
+		org.jb2011.lnf.beautyeye.ch7_popup.__UI__.uiImpl();
 ////		//自定义ToggleButton的L&F实现
-//		org.jb2011.lnf.beautyeye.ch8_toolbar.__UI__.uiImpl();
+		org.jb2011.lnf.beautyeye.ch8_toolbar.__UI__.uiImpl();
 ////		//自定义菜单项的L&F实现
-//		org.jb2011.lnf.beautyeye.ch9_menu.__UI__.uiImpl();
+		org.jb2011.lnf.beautyeye.ch9_menu.__UI__.uiImpl();
 ////		//自定义DesktopPane及内部窗体的L&F实现
-//		org.jb2011.lnf.beautyeye.ch10_internalframe.__UI__.uiImpl();
+		org.jb2011.lnf.beautyeye.ch10_internalframe.__UI__.uiImpl();
 ////		//自定义进度条的L&F实现
-//		org.jb2011.lnf.beautyeye.ch12_progress.__UI__.uiImpl();
+		org.jb2011.lnf.beautyeye.ch12_progress.__UI__.uiImpl();
 ////		//自定义单选按钮的L&F实现
-//		org.jb2011.lnf.beautyeye.ch13_radio$cb_btn.__UI__.uiImpl();
+		org.jb2011.lnf.beautyeye.ch13_radio$cb_btn.__UI__.uiImpl();
 ////		//自定义下拉框的L&F实现
-//		org.jb2011.lnf.beautyeye.ch14_combox.__UI__.uiImpl();
+		org.jb2011.lnf.beautyeye.ch14_combox.__UI__.uiImpl();
 ////		//自定义JSlider的L&F实现
-//		org.jb2011.lnf.beautyeye.ch15_slider.__UI__.uiImpl();
+		org.jb2011.lnf.beautyeye.ch15_slider.__UI__.uiImpl();
 ////		//自定义Jtree的L&F实现
-//		org.jb2011.lnf.beautyeye.ch16_tree.__UI__.uiImpl();
+		org.jb2011.lnf.beautyeye.ch16_tree.__UI__.uiImpl();
 ////		//自定义JSplitPane的L&F实现
-//		org.jb2011.lnf.beautyeye.ch17_split.__UI__.uiImpl();
+		org.jb2011.lnf.beautyeye.ch17_split.__UI__.uiImpl();
 ////		//自定义JSpinner的L&F实现
-//		org.jb2011.lnf.beautyeye.ch18_spinner.__UI__.uiImpl();
+		org.jb2011.lnf.beautyeye.ch18_spinner.__UI__.uiImpl();
 ////		//自定义JList的L&F实现
-//		org.jb2011.lnf.beautyeye.ch19_list.__UI__.uiImpl();
+		org.jb2011.lnf.beautyeye.ch19_list.__UI__.uiImpl();
 ////		//自定义JFileChooser的L&F实现
-//		org.jb2011.lnf.beautyeye.ch20_filechooser.__UI__.uiImpl();
+		org.jb2011.lnf.beautyeye.ch20_filechooser.__UI__.uiImpl();
 	}
 	
 	/**

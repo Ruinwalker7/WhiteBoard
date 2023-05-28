@@ -17,9 +17,9 @@ public class DataBuffer {
     // 服务器端套接字
     public static ServerSocket serverSocket;
     //在线用户的IO Map
-    public static Map<Long, OnlineClientIOCache> onlineUserIOCacheMap;
+    public static Map<String, OnlineClientIOCache> onlineUserIOCacheMap;
     //在线用户Map
-    public static Map<Long, User> onlineUsersMap;
+    public static Map<String, User> onlineUsersMap;
     //服务器配置参数属性集
     public static Properties configProp;
 
