@@ -3,12 +3,14 @@ package server.ui;
 import client.DataBuffer;
 import client.model.entity.MyCellRenderer;
 import client.model.entity.OnlineUserListModel;
+import client.util.ClientUtil;
 import common.entity.*;
 import server.OnlineClientIOCache;
 import server.ServerUtil;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -16,6 +18,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 
@@ -192,12 +195,14 @@ public class ServerFrame extends JFrame {
         this.add(btn2Panel, BorderLayout.SOUTH);
         fileBtn.setToolTipText("选择文件发送");
         btn2Panel.add(fileBtn);
+        JButton saveBtn = new JButton("保存");
+        saveBtn.setToolTipText("保存画板内容");
+        btn2Panel.add(saveBtn);
         JButton closeBtn = new JButton("关闭");
         closeBtn.setToolTipText("退出整个程序");
         btn2Panel.add(closeBtn);
         JButton submitBtn = new JButton("发送");
         submitBtn.setToolTipText("按Enter键发送消息");
-
         btn2Panel.add(submitBtn);
 
 
@@ -247,7 +252,6 @@ public class ServerFrame extends JFrame {
             }
         });
 
-//        jb1.addActionListener(new);
         //工具栏响应
         drawLine.setActionCommand("直线");
         drawLine.addActionListener(new ActionListener() {
@@ -328,6 +332,11 @@ public class ServerFrame extends JFrame {
             }
         });
 
+        saveBtn.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                save();
+            }});
         clearBtn.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -345,6 +354,38 @@ public class ServerFrame extends JFrame {
 
         submitBtn.addActionListener(event -> sendTxtMsg());
     };
+
+    public void save()  {
+        Container content=whiteBroad;
+        //创建缓冲图片对象
+        BufferedImage img=new BufferedImage(
+                whiteBroad.getWidth(),whiteBroad.getHeight(),BufferedImage.TYPE_INT_RGB);
+        //得到图形对象
+        Graphics2D g2d = img.createGraphics();
+        //将窗口内容面板输出到图形对象中
+        content.printAll(g2d);
+        //保存为图片
+        File f=new File("C:\\test\\saveScreen"+".jpg");
+        g2d.dispose();
+
+        BufferedImage myImage = null;
+
+        JFileChooser jfc = new JFileChooser();
+        jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int result = jfc.showSaveDialog(this);
+
+        if (result == JFileChooser.APPROVE_OPTION){
+            try {
+                String path = jfc.getSelectedFile().getCanonicalPath();
+                path+="/pic.jpg";
+                System.out.println(path);
+                ImageIO.write(img, "jpg", new File(path));
+            }  catch (IOException e) {
+                e.printStackTrace();
+        }
+
+        }
+    }
 
     public void sendFile(){
         JFileChooser jfc = new JFileChooser();

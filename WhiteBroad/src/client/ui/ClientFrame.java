@@ -9,12 +9,15 @@ import common.entity.*;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import static javax.swing.JOptionPane.showInputDialog;
@@ -110,9 +113,13 @@ public class ClientFrame extends JFrame {
         btn2Panel.setLayout(new FlowLayout(FlowLayout.RIGHT));
         this.add(btn2Panel, BorderLayout.SOUTH);
         rybqBtn = new JCheckBox("私聊老师");
+        btn2Panel.add(rybqBtn);
+        JButton saveBtn = new JButton("保存");
+        saveBtn.setToolTipText("保存画板内容");
+        btn2Panel.add(saveBtn);
         JButton closeBtn = new JButton("关闭");
         closeBtn.setToolTipText("退出整个程序");
-        btn2Panel.add(rybqBtn);
+;
         btn2Panel.add(closeBtn);
         JButton submitBtn = new JButton("发送");
         submitBtn.setToolTipText("按Enter键发送消息");
@@ -166,7 +173,11 @@ public class ClientFrame extends JFrame {
                 }
             }
         });
-
+        saveBtn.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                save();
+            }});
         //关闭窗口
         this.addWindowListener(new WindowAdapter(){
             public void windowClosing(WindowEvent e) {
@@ -180,7 +191,38 @@ public class ClientFrame extends JFrame {
 
         new ClientThread(this).start();
     }
+    /** 保存图片*/
+    public void save()  {
+        Container content=whiteBroad;
+        //创建缓冲图片对象
+        BufferedImage img=new BufferedImage(
+                whiteBroad.getWidth(),whiteBroad.getHeight(),BufferedImage.TYPE_INT_RGB);
+        //得到图形对象
+        Graphics2D g2d = img.createGraphics();
+        //将窗口内容面板输出到图形对象中
+        content.printAll(g2d);
+        //保存为图片
+        File f=new File("C:\\test\\saveScreen"+".jpg");
+        g2d.dispose();
 
+        BufferedImage myImage = null;
+
+        JFileChooser jfc = new JFileChooser();
+        jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int result = jfc.showSaveDialog(this);
+
+        if (result == JFileChooser.APPROVE_OPTION){
+            try {
+                String path = jfc.getSelectedFile().getCanonicalPath();
+                path+="/pic.jpg";
+                System.out.println(path);
+                ImageIO.write(img, "jpg", new File(path));
+            }  catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
 
     /** 发送文本消息 */
     public void sendTxtMsg(){
