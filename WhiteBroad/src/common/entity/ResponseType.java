@@ -10,5 +10,7 @@ public enum ResponseType {
     /**广播*/
     BOARD,
     /**踢除*/
-    REMOVE
+    REMOVE,
+    LINE,
+    OVAL
 }

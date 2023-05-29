@@ -4,8 +4,6 @@ import client.DataBuffer;
 import client.model.entity.MyCellRenderer;
 import client.model.entity.OnlineUserListModel;
 import common.entity.*;
-import common.util.DrawListener;
-import common.util.WhiteBroad;
 import server.OnlineClientIOCache;
 import server.ServerUtil;
 
@@ -119,8 +117,6 @@ public class ServerFrame extends JFrame {
 
         JPanel whiteBroadPane = new JPanel();
         whiteBroadPane.setLayout(new BorderLayout());
-
-
 
         drawUtilPane.setBackground(new Color(252,252,252));
         drawUtilPane.add(drawLine);
@@ -299,14 +295,13 @@ public class ServerFrame extends JFrame {
             Message msg = new Message();
             msg.setToUser(selectedUser);
 
-
             msg.setFromUser(client.DataBuffer.currentUser);
             msg.setSendTime(new Date());
 
             DateFormat df = new SimpleDateFormat("HH:mm:ss");
             StringBuffer sb = new StringBuffer();
             sb.append(" ").append(df.format(msg.getSendTime())).append(" ")
-                    .append("老师");
+                    .append("老师 ");
 
             StringBuffer sb2 = new StringBuffer();
             sb2.append(" ").append(df.format(msg.getSendTime())).append(" ")
@@ -322,7 +317,7 @@ public class ServerFrame extends JFrame {
             try {
                 Response response = new Response();
                 response.setType(ResponseType.CHAT);
-                response.setData("msg", msg);
+                response.setData("txtMsg", msg);
                 response.setStatus(ResponseStatus.OK);
                 iteratorResponse(response);
             } catch (IOException e) {
@@ -348,8 +343,10 @@ public class ServerFrame extends JFrame {
     }
 
     private void iteratorResponse(Response response) throws IOException {
+        System.out.println("11111");
         for(OnlineClientIOCache onlineUserIO : server.DataBuffer.onlineUserIOCacheMap.values()){
             ObjectOutputStream oos = onlineUserIO.getOos();
+            System.out.println("write to "+oos);
             oos.writeObject(response);
             oos.flush();
         }

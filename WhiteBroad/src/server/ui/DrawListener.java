@@ -1,4 +1,11 @@
-package common.util;
+package server.ui;
+
+import common.entity.Circle;
+import common.entity.Line;
+import common.entity.Response;
+import common.entity.ResponseType;
+import server.DataBuffer;
+import server.ServerUtil;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -7,6 +14,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
 
 import javax.swing.*;
 
@@ -63,9 +71,9 @@ public class DrawListener implements MouseListener, MouseMotionListener,
             x3=e.getX();
             y3=e.getY();
             now++;
-            g.drawLine(x1,y1,x2,y2);
-            g.drawLine(x2,y2,x3,y3);
-            g.drawLine(x3,y3,x1,y1);
+            drawLine(x1,y1,x2,y2,color);
+            drawLine(x2,y2,x3,y3,color);
+            drawLine(x3,y3,x1,y1,color);
         }
     }
 
@@ -80,15 +88,13 @@ public class DrawListener implements MouseListener, MouseMotionListener,
         if ("直线".equals(type)) {
             x2 = e.getX();
             y2 = e.getY();
-            g.setColor(color);
-            g.drawLine(x1, y1, x2, y2);
+            drawLine(x1, y1, x2, y2,color);
         }        // 记录鼠标释放时的坐标
         else if ("椭圆".equals(type)) {
             x2 = e.getX();
             y2 = e.getY();
-            g.setColor(color);
             int d = (int)Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1));
-            g.drawOval(x1, y1, d, d);
+            drawOval(x1, y1, d, d,color);
         }
     }
 
@@ -109,8 +115,7 @@ public class DrawListener implements MouseListener, MouseMotionListener,
             int x, y;
             x = e.getX();
             y = e.getY();
-            g.setColor(color);
-            g.drawLine(x1, y1, x, y);
+            drawLine(x1, y1, x, y,color);
             x1 = x;
             y1 = y;
         }
@@ -124,5 +129,35 @@ public class DrawListener implements MouseListener, MouseMotionListener,
     @Override
     public void actionPerformed(ActionEvent e) {
 
+    }
+
+    public void drawLine(int x1,int y1,int x2,int y2,Color color){
+        g.setColor(color);
+        g.drawLine(x1, y1, x2, y2);
+        Line line = new Line(x1,y1,x2,y2,color);
+        DataBuffer.LineList.add(line);
+        try{
+            Response response = new Response();
+            response.setType(ResponseType.LINE);
+            response.setData("line",line);
+            ServerUtil.iteratorResponse(response);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void drawOval(int x1,int y1,int a,int b,Color color){
+        g.setColor(color);
+        g.drawOval(x1, y1, a, b);
+        Circle circle = new Circle(x1,y1,a,b,color);
+        DataBuffer.CircleList.add(circle);
+        try{
+            Response response = new Response();
+            response.setType(ResponseType.OVAL);
+            response.setData("circle",circle);
+            ServerUtil.iteratorResponse(response);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

@@ -1,11 +1,11 @@
 package client.ui;
 
+import client.ClientThread;
 import client.DataBuffer;
 import client.model.entity.MyCellRenderer;
 import client.model.entity.OnlineUserListModel;
 import client.util.ClientUtil;
 import common.entity.*;
-import common.util.WhiteBroad;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -30,15 +30,23 @@ public class ClientFrame extends JFrame {
         login();
         init();
         setVisible(true);
-        Thread t1 = new Thread(whiteBroad);
-        t1.start();
+        DataBuffer.g=whiteBroad.getGraphics();
+//        Thread t1 = new Thread(whiteBroad);
+//        t1.start();
     }
 
     public void login(){
        String name = showInputDialog(null, "请输入姓名");
-       Request request = new Request();
-       request.setAction("Login");
-       request.setAttribute("User",name);
+       User user = new User(name);
+        try {
+            Request request = new Request();
+            request.setAction("Login");
+            request.setAttribute("user",user);
+            ClientUtil.sendTextRequest(request);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(0);
+        }
        DataBuffer.currentUser = new User(name);
     }
 
@@ -166,6 +174,8 @@ public class ClientFrame extends JFrame {
         closeBtn.addActionListener(event -> logout());
 
         submitBtn.addActionListener(event -> sendTxtMsg());
+
+        new ClientThread(this).start();
     }
 
 
@@ -185,7 +195,7 @@ public class ClientFrame extends JFrame {
             DateFormat df = new SimpleDateFormat("HH:mm:ss");
             StringBuffer sb = new StringBuffer();
             sb.append(" ").append(df.format(msg.getSendTime())).append(" ")
-                    .append(DataBuffer.currentUser.getNickname());
+                    .append(DataBuffer.currentUser.getNickname()).append(" ");
 
             StringBuffer sb2 = new StringBuffer();
             sb2.append(" ").append(df.format(msg.getSendTime())).append(" ")

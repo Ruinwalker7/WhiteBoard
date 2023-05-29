@@ -4,6 +4,8 @@ import common.entity.*;
 import server.DataBuffer;
 import server.OnlineClientIOCache;
 import server.ServerUtil;
+
+import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -64,7 +66,7 @@ public class RequestProcessor implements Runnable {
         currentClientSocket.close();
 
         DataBuffer.onlineUserTableModel.remove(user.getNickname()); //把当前下线用户从在线用户表Model中删除
-        iteratorResponse(response);
+        ServerUtil.iteratorResponse(response);
     }
 
 
@@ -96,10 +98,11 @@ public class RequestProcessor implements Runnable {
                 Response response2 = new Response();
                 response2.setType(ResponseType.LOGIN);
                 response2.setData("loginUser", user);
-                iteratorResponse(response2);
+                ServerUtil.iteratorResponse(response2);
 
                 //把当前上线的用户IO添加到缓存Map中
                 DataBuffer.onlineUserIOCacheMap.put(user.getNickname(),currentClientIO);
+                System.out.println(DataBuffer.onlineUserIOCacheMap);
 
                 //把当前上线用户添加到OnlineUserTableModel中
                 DataBuffer.onlineUserTableModel.add(
@@ -123,7 +126,8 @@ public class RequestProcessor implements Runnable {
         response.setData("txtMsg", msg);
         ServerUtil.appendTxt2MsgListArea(msg.getMessage());
         for(String name : DataBuffer.onlineUserIOCacheMap.keySet()){
-            if(msg.getFromUser().getNickname() == name ){continue; }
+            if(msg.getFromUser().getNickname() == name ){
+                continue; }
             sendResponse(DataBuffer.onlineUserIOCacheMap.get(name), response);
         }
     }
@@ -177,15 +181,6 @@ public class RequestProcessor implements Runnable {
 
         OnlineClientIOCache io = DataBuffer.onlineUserIOCacheMap.get(msg.getToUser().getNickname());
         sendResponse_sys(io, response);
-    }
-
-    /** 给所有在线客户都发送响应 */
-    private void iteratorResponse(Response response) throws IOException {
-        for(OnlineClientIOCache onlineUserIO : DataBuffer.onlineUserIOCacheMap.values()){
-            ObjectOutputStream oos = onlineUserIO.getOos();
-            oos.writeObject(response);
-            oos.flush();
-        }
     }
 
     /** 向指定客户端IO的输出流中输出指定响应 */

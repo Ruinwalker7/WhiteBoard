@@ -34,6 +34,8 @@ public class DataBuffer {
     public static final int RECEIVE_FILE_PORT = 6667;
     /** 在线用户JList的Model */
     public static OnlineUserListModel onlineUserListModel;
+    /** 画笔 */
+    public static Graphics g;
 
     static{
         screenSize = Toolkit.getDefaultToolkit().getScreenSize();

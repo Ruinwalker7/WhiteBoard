@@ -1,11 +1,14 @@
 package server;
 
+import common.entity.Circle;
+import common.entity.Line;
 import common.entity.User;
 import server.model.entity.OnlineUserTableModel;
 
 import java.awt.*;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -28,7 +31,16 @@ public class DataBuffer {
     // 当前服务器所在系统的屏幕尺寸
     public static Dimension screenSize;
 
+    public static ArrayList<Line> LineList;
+
+    public static ArrayList<Circle> CircleList;
+
+
     static{
+        LineList = new ArrayList<>();
+
+        CircleList = new ArrayList<>();
+
         onlineUserIOCacheMap = new ConcurrentSkipListMap<>();
         onlineUsersMap = new ConcurrentSkipListMap<>();
         configProp = new Properties();
