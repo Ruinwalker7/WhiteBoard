@@ -7,8 +7,7 @@ import common.entity.ResponseType;
 import server.DataBuffer;
 import server.ServerUtil;
 
-import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -22,14 +21,18 @@ public class DrawListener implements MouseListener, MouseMotionListener,
         ActionListener {
 
     static private int x1, y1, x2, y2,x3,y3,now;// 记录两次鼠标的点击坐标
-    static private Graphics g;// 从界面获取画布对象
+    static private Graphics g1;// 从界面获取画布对象
+    static private Graphics2D g;
     static private String type;// 记录当前按钮的信息，区分不同的按钮
     static private Color color;// 记录画笔的颜色信息
+    static private BasicStroke stroke; //记录画板粗细
     private JPanel jf;
-    public DrawListener(Graphics g, JPanel jf) {
+    public DrawListener(Graphics g1, JPanel jf) {
         now = 0;
         type = "直线";
-        this.g = g;
+        stroke = new BasicStroke(1);
+        this.g1 = g1;
+        this.g = (Graphics2D)g1;
         this.jf = jf;
     }
 
@@ -41,6 +44,10 @@ public class DrawListener implements MouseListener, MouseMotionListener,
         type=str;
         x1=y1=y2=x2=0;
         now = 0;
+    }
+
+    public static void setStroke(BasicStroke stroke1){
+        stroke = stroke1;
     }
 
     //鼠标按下时的处理方法
@@ -134,6 +141,7 @@ public class DrawListener implements MouseListener, MouseMotionListener,
     public void drawLine(int x1,int y1,int x2,int y2,Color color){
         g.setColor(color);
         g.drawLine(x1, y1, x2, y2);
+        g.setStroke(stroke);
         Line line = new Line(x1,y1,x2,y2,color);
         DataBuffer.LineList.add(line);
         try{
@@ -149,6 +157,7 @@ public class DrawListener implements MouseListener, MouseMotionListener,
     public void drawOval(int x1,int y1,int a,int b,Color color){
         g.setColor(color);
         g.drawOval(x1, y1, a, b);
+        g.setStroke(stroke);
         Circle circle = new Circle(x1,y1,a,b,color);
         DataBuffer.CircleList.add(circle);
         try{

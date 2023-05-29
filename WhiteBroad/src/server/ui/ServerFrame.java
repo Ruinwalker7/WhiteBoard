@@ -73,25 +73,25 @@ public class ServerFrame extends JFrame {
         //画板工具
         drawLine = new JButton();
         drawLine.setSize(40,40);
-        setIcon(this.getClass().getResource("/").getPath()+"\\image\\line.png",drawLine);
+        setIcon(this.getClass().getResource("/").getPath()+"\\image\\line.png",drawLine,40,40);
         drawLine.setBorder(null);
         drawLine.setContentAreaFilled(false);//除去默认的背景填充
 
         drawOval = new JButton();
         drawOval.setSize(40,40);
-        setIcon(this.getClass().getResource("/").getPath()+"\\image\\oval.png",drawOval);
+        setIcon(this.getClass().getResource("/").getPath()+"\\image\\oval.png",drawOval,35,35);
         drawOval.setBorder(null);
         drawOval.setContentAreaFilled(false);//除去默认的背景填充
 
         drawArc = new JButton();
         drawArc.setSize(40,40);
-        setIcon(this.getClass().getResource("/").getPath()+"\\image\\curve.png",drawArc);
+        setIcon(this.getClass().getResource("/").getPath()+"\\image\\curve.png",drawArc,40,40);
         drawArc.setBorder(null);
         drawArc.setContentAreaFilled(false);//除去默认的背景填充
 
         drawPolygon = new JButton();
         drawPolygon.setSize(40,40);
-        setIcon(this.getClass().getResource("/").getPath()+"\\image\\triangle.png",drawPolygon);
+        setIcon(this.getClass().getResource("/").getPath()+"\\image\\triangle.png",drawPolygon,40,40);
         drawPolygon.setBorder(null);
         drawPolygon.setContentAreaFilled(false);//除去默认的背景填充
 
@@ -102,9 +102,9 @@ public class ServerFrame extends JFrame {
         jb1.setSize(30, 30);
         jb2.setSize(30, 30);
         jb3.setSize(30, 30);
-        setIcon(this.getClass().getResource("/").getPath()+"\\image\\Black.png",jb1);
-        setIcon(this.getClass().getResource("/").getPath()+"\\image\\Blue.png",jb2);
-        setIcon(this.getClass().getResource("/").getPath()+"\\image\\Red.png",jb3);
+        setIcon(this.getClass().getResource("/").getPath()+"\\image\\Black.png",jb1,30,30);
+        setIcon(this.getClass().getResource("/").getPath()+"\\image\\Blue.png",jb2,30,30);
+        setIcon(this.getClass().getResource("/").getPath()+"\\image\\Red.png",jb3,30,30);
         jb1.setContentAreaFilled(false);//除去默认的背景填充
         jb2.setContentAreaFilled(false);//除去默认的背景填充
         jb3.setContentAreaFilled(false);//除去默认的背景填充
@@ -119,6 +119,11 @@ public class ServerFrame extends JFrame {
         whiteBroadPane.setLayout(new BorderLayout());
 
         drawUtilPane.setBackground(new Color(252,252,252));
+
+        JLabel label = new JLabel("粗细：");
+        //创建JTextField，16表示16列，用于JTextField的宽度显示而不是限制字符个数
+        JTextField textField = new JTextField(4);
+
         drawUtilPane.add(drawLine);
         drawUtilPane.add(drawOval);
         drawUtilPane.add(drawArc);
@@ -126,6 +131,17 @@ public class ServerFrame extends JFrame {
         drawUtilPane.add(jb1);
         drawUtilPane.add(jb2);
         drawUtilPane.add(jb3);
+
+        //内容面板
+        JPanel contentPane = new JPanel();
+        contentPane.setLayout(new FlowLayout());
+
+        //添加控件
+        contentPane.add(label);
+        contentPane.add(textField);
+
+        textField.setText("1");
+        drawUtilPane.add(contentPane);
 
         whiteBroad = new WhiteBroad();
 
@@ -275,10 +291,10 @@ public class ServerFrame extends JFrame {
         submitBtn.addActionListener(event -> sendTxtMsg());
     }
 
-    public void setIcon(String file,JButton com)
+    public void setIcon(String file,JButton com,int x,int y)
     {
         ImageIcon ico=new ImageIcon(file);
-        Image temp=ico.getImage().getScaledInstance(com.getWidth(),com.getHeight(),ico.getImage().SCALE_DEFAULT);
+        Image temp=ico.getImage().getScaledInstance(x,y,ico.getImage().SCALE_DEFAULT);
         ico=new ImageIcon(temp);
         com.setIcon(ico);
     }
@@ -343,7 +359,6 @@ public class ServerFrame extends JFrame {
     }
 
     private void iteratorResponse(Response response) throws IOException {
-        System.out.println("11111");
         for(OnlineClientIOCache onlineUserIO : server.DataBuffer.onlineUserIOCacheMap.values()){
             ObjectOutputStream oos = onlineUserIO.getOos();
             System.out.println("write to "+oos);
