@@ -6,7 +6,7 @@ import java.util.Date;
 public class Message implements Serializable {
     private static final long serialVersionUID = 1820192075144114657L;
     /** 消息接收者 */
-    private User toUser;
+    private Boolean toTeacher;
     /** 消息发送者 */
     private User fromUser;
     /** 消息内容 */
@@ -14,13 +14,14 @@ public class Message implements Serializable {
     /** 发送时间 */
     private Date sendTime;
 
-    public User getToUser() {
-        return toUser;
+    public Boolean getToTeacher() {
+        return toTeacher;
     }
 
-    public void setToUser(User toUser) {
-        this.toUser = toUser;
+    public void setToTeacher(Boolean toTeacher) {
+        this.toTeacher = toTeacher;
     }
+
     public User getFromUser() {
         return fromUser;
     }

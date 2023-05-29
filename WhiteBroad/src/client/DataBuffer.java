@@ -1,6 +1,8 @@
 package client;
 
 import client.model.entity.OnlineUserListModel;
+import common.entity.Ellipse;
+import common.entity.Line;
 import common.entity.User;
 
 import java.awt.*;
@@ -9,6 +11,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -35,9 +38,14 @@ public class DataBuffer {
     /** 在线用户JList的Model */
     public static OnlineUserListModel onlineUserListModel;
     /** 画笔 */
-    public static Graphics g;
+    public static Graphics2D g;
+
+    public static ArrayList<Line> LineList;
+
+    public static ArrayList<Ellipse> ellipseList;
 
     static{
+//        onlineUsers = new ArrayList<>();
         screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         //加载服务器配置文件
         configProp = new Properties();

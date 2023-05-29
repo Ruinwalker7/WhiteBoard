@@ -1,41 +1,29 @@
 package common.entity;
 
 import java.awt.*;
+import java.awt.geom.Line2D;
 import java.io.Serializable;
 
 public class Line implements Serializable {
 
     private static final long serialVersionUID = 1825432075144114657L;
 
-    public int x1,x2,y1,y2;
+    private Line2D line2D;
     private Color color;
-    private BasicStroke S;
+    private float f;
 
-    public Line(int x1, int x2, int y1, int y2, BasicStroke s, Color color) {
-        this.x1 = x1;
-        this.x2 = x2;
-        this.y1 = y1;
-        this.y2 = y2;
-        S = s;
+    public Line(Line2D line2D, Color color, float f) {
+        this.line2D = line2D;
         this.color = color;
+        this.f = f;
     }
 
-
-
-    public Line(int x1, int y1, int x2, int y2, Color color) {
-        this.x1 = x1;
-        this.x2 = x2;
-        this.y1 = y1;
-        this.y2 = y2;
-        this.color = color;
+    public Line2D getLine2D() {
+        return line2D;
     }
 
-    public BasicStroke getS() {
-        return S;
-    }
-
-    public void setS(BasicStroke s) {
-        S = s;
+    public void setLine2D(Line2D line2D) {
+        this.line2D = line2D;
     }
 
     public Color getColor() {
@@ -46,4 +34,11 @@ public class Line implements Serializable {
         this.color = color;
     }
 
+    public float getF() {
+        return f;
+    }
+
+    public void setF(float f) {
+        this.f = f;
+    }
 }

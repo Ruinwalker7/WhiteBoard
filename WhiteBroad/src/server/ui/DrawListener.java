@@ -1,6 +1,6 @@
 package server.ui;
 
-import common.entity.Circle;
+import common.entity.Ellipse;
 import common.entity.Line;
 import common.entity.Response;
 import common.entity.ResponseType;
@@ -13,7 +13,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.ArrayList;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
 
 import javax.swing.*;
 
@@ -25,12 +26,13 @@ public class DrawListener implements MouseListener, MouseMotionListener,
     static private Graphics2D g;
     static private String type;// 记录当前按钮的信息，区分不同的按钮
     static private Color color;// 记录画笔的颜色信息
+    static private float pan;
     static private BasicStroke stroke; //记录画板粗细
     private JPanel jf;
     public DrawListener(Graphics g1, JPanel jf) {
         now = 0;
         type = "直线";
-        stroke = new BasicStroke(1);
+        pan=2;
         this.g1 = g1;
         this.g = (Graphics2D)g1;
         this.jf = jf;
@@ -46,8 +48,9 @@ public class DrawListener implements MouseListener, MouseMotionListener,
         now = 0;
     }
 
-    public static void setStroke(BasicStroke stroke1){
-        stroke = stroke1;
+    public static void setStroke(float f){
+        pan=f;
+        g.setStroke(new BasicStroke(pan));
     }
 
     //鼠标按下时的处理方法
@@ -100,8 +103,10 @@ public class DrawListener implements MouseListener, MouseMotionListener,
         else if ("椭圆".equals(type)) {
             x2 = e.getX();
             y2 = e.getY();
-            int d = (int)Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1));
-            drawOval(x1, y1, d, d,color);
+            int width = Math.abs(x2-x1); // 矩形的宽度
+            int height =  Math.abs(y2-y1); // 矩形的高度
+
+            drawOval(x1, y1, width, height,color);
         }
     }
 
@@ -140,14 +145,18 @@ public class DrawListener implements MouseListener, MouseMotionListener,
 
     public void drawLine(int x1,int y1,int x2,int y2,Color color){
         g.setColor(color);
-        g.drawLine(x1, y1, x2, y2);
-        g.setStroke(stroke);
-        Line line = new Line(x1,y1,x2,y2,color);
+        g.setStroke(new BasicStroke(pan));
+
+        Line2D line2D = new Line2D.Double(x1,y1,x2,y2);
+        Line line = new Line(line2D,color,pan);
+
+        g.draw(line2D);
+
         DataBuffer.LineList.add(line);
         try{
             Response response = new Response();
             response.setType(ResponseType.LINE);
-            response.setData("line",line);
+            response.setData("shape",line);
             ServerUtil.iteratorResponse(response);
         }catch (Exception e){
             e.printStackTrace();
@@ -156,14 +165,16 @@ public class DrawListener implements MouseListener, MouseMotionListener,
 
     public void drawOval(int x1,int y1,int a,int b,Color color){
         g.setColor(color);
-        g.drawOval(x1, y1, a, b);
-        g.setStroke(stroke);
-        Circle circle = new Circle(x1,y1,a,b,color);
-        DataBuffer.CircleList.add(circle);
+        g.setStroke(new BasicStroke(pan));
+        Ellipse2D ellipse2d = new Ellipse2D.Double(x1, y1, a, b);
+        g.draw(ellipse2d);
+
+        Ellipse ellipse = new Ellipse(ellipse2d,color,pan);
+        DataBuffer.ellipseList.add(ellipse);
         try{
             Response response = new Response();
-            response.setType(ResponseType.OVAL);
-            response.setData("circle",circle);
+            response.setType(ResponseType.ELLIPSE);
+            response.setData("shape", ellipse);
             ServerUtil.iteratorResponse(response);
         }catch (Exception e){
             e.printStackTrace();

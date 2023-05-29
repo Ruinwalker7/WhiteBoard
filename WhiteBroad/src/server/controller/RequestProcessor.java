@@ -1,14 +1,13 @@
 package server.controller;
 
 import common.entity.*;
+import common.util.IOUtil;
 import server.DataBuffer;
 import server.OnlineClientIOCache;
 import server.ServerUtil;
 
 import javax.xml.crypto.Data;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -41,6 +40,8 @@ public class RequestProcessor implements Runnable {
                 }else if("exit".equals(actionName)){       //请求断开连接
                     logout(currentClientIOCache, request);
                     break;
+                }else if("agreeReceiveFile".equals(actionName)){
+                    sendFile(currentClientIOCache,request);
                 }
             }
         }catch(Exception e){
@@ -48,7 +49,43 @@ public class RequestProcessor implements Runnable {
         }
     }
 
+    /** 发送文件 */
+    private void sendFile(OnlineClientIOCache currentClientIO,Request request)  throws IOException{
+        final FileInfo sendFile = (FileInfo)request.getAttribute("sendFile");
 
+        Response response = new Response();
+        response.setType(ResponseType.RECEIVING);
+        response.setData("sendFile",sendFile);
+        currentClientIO.getOos().writeObject(response);
+        currentClientIO.getOos().flush();
+
+        BufferedInputStream bis = null;
+        BufferedOutputStream bos = null;
+        Socket socket = null;
+        try {
+            socket = new Socket(sendFile.getDestIp(),sendFile.getDestPort());//套接字连接
+            bis = new BufferedInputStream(new FileInputStream(sendFile.getSrcName()));//文件读入
+            bos = new BufferedOutputStream(socket.getOutputStream());//文件写出
+
+            byte[] buffer = new byte[1024];
+            int n = -1;
+            while ((n = bis.read(buffer)) != -1){
+                bos.write(buffer, 0, n);
+            }
+            bos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally{
+            IOUtil.close(bis,bos);
+            if (socket != null && !socket.isClosed()) {
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 
     /** 客户端退出 */
     public void logout(OnlineClientIOCache oio, Request request) throws IOException{
@@ -91,6 +128,8 @@ public class RequestProcessor implements Runnable {
 
                 response.setStatus(ResponseStatus.OK);
                 response.setData("user", user);
+                response.setData("Line",DataBuffer.LineList);
+                response.setData("Ellipse",DataBuffer.ellipseList);
                 currentClientIO.getOos().writeObject(response);  //把响应对象往客户端写
                 currentClientIO.getOos().flush();
 
@@ -102,12 +141,14 @@ public class RequestProcessor implements Runnable {
 
                 //把当前上线的用户IO添加到缓存Map中
                 DataBuffer.onlineUserIOCacheMap.put(user.getNickname(),currentClientIO);
-                System.out.println(DataBuffer.onlineUserIOCacheMap);
+
 
                 //把当前上线用户添加到OnlineUserTableModel中
                 DataBuffer.onlineUserTableModel.add(
                         new String[]{String.valueOf(user.getNickname()),
                                 user.getNickname()});
+
+                ServerUtil.appendTxt2MsgListArea("【系统通知】用户"+user.getNickname()+"上线了！\n");
             }
         }else{ //登录失败
             response.setStatus(ResponseStatus.OK);
@@ -125,63 +166,14 @@ public class RequestProcessor implements Runnable {
         response.setType(ResponseType.CHAT);
         response.setData("txtMsg", msg);
         ServerUtil.appendTxt2MsgListArea(msg.getMessage());
+        if(!msg.getToTeacher()){
         for(String name : DataBuffer.onlineUserIOCacheMap.keySet()){
             if(msg.getFromUser().getNickname() == name ){
                 continue; }
             sendResponse(DataBuffer.onlineUserIOCacheMap.get(name), response);
-        }
+        }}
     }
 
-    /** 踢除用户 */
-    public static void remove(User user_) throws IOException{
-        User user = new User("老师");
-        Message msg = new Message();
-        msg.setFromUser(user);
-        msg.setSendTime(new Date());
-        msg.setToUser(user_);
-
-        StringBuffer sb = new StringBuffer();
-        DateFormat df = new SimpleDateFormat("HH:mm:ss");
-        sb.append(" ").append(df.format(msg.getSendTime())).append(" ");
-        sb.append("系统通知您\n  "+"您被强制下线"+"\n");
-        msg.setMessage(sb.toString());
-
-        Response response = new Response();
-        response.setStatus(ResponseStatus.OK);
-        response.setType(ResponseType.REMOVE);
-        response.setData("txtMsg", msg);
-
-        OnlineClientIOCache io = DataBuffer.onlineUserIOCacheMap.get(msg.getToUser().getNickname());
-        try{
-            sendResponse_sys(io, response);
-        }
-        catch (IOException e){
-            e.printStackTrace();
-        }
-    }
-
-    /** 私信 */
-    public static void chat_sys(String str,User user_) throws IOException{
-        User user = new User("admin");
-        Message msg = new Message();
-        msg.setFromUser(user);
-        msg.setSendTime(new Date());
-        msg.setToUser(user_);
-
-        DateFormat df = new SimpleDateFormat("HH:mm:ss");
-        StringBuffer sb = new StringBuffer();
-        sb.append(" ").append(df.format(msg.getSendTime())).append(" ");
-        sb.append("系统通知您\n  "+str+"\n");
-        msg.setMessage(sb.toString());
-
-        Response response = new Response();
-        response.setStatus(ResponseStatus.OK);
-        response.setType(ResponseType.CHAT);
-        response.setData("txtMsg", msg);
-
-        OnlineClientIOCache io = DataBuffer.onlineUserIOCacheMap.get(msg.getToUser().getNickname());
-        sendResponse_sys(io, response);
-    }
 
     /** 向指定客户端IO的输出流中输出指定响应 */
     private void sendResponse(OnlineClientIOCache onlineUserIO, Response response)throws IOException {
@@ -191,17 +183,5 @@ public class RequestProcessor implements Runnable {
     }
 
     /** 发送失败会认为下线 */
-    private static void sendResponse_sys(OnlineClientIOCache onlineUserIO, Response response)throws IOException {
-        ObjectOutputStream oos = onlineUserIO.getOos();
-        try{
-            oos.writeObject(response);
-            oos.flush();
-        }catch (IOException e){
-            Message msg = (Message)response.getData("txtMsg");
-            DataBuffer.onlineUserIOCacheMap.remove(msg.getToUser().getNickname());
-            DataBuffer.onlineUsersMap.remove(msg.getToUser().getNickname());
-            DataBuffer.onlineUserTableModel.remove(msg.getToUser().getNickname());
-        }
 
-    }
 }

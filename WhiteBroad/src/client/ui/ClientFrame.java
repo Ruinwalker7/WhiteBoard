@@ -12,7 +12,9 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import javax.swing.*;
 
 import static javax.swing.JOptionPane.showInputDialog;
@@ -26,28 +28,32 @@ public class ClientFrame extends JFrame {
     public static JTextArea sendArea;
     /** 在线用户列表 */
     public static JList onlineList;
+    public JCheckBox rybqBtn;
     public ClientFrame(){
         login();
         init();
         setVisible(true);
-        DataBuffer.g=whiteBroad.getGraphics();
-//        Thread t1 = new Thread(whiteBroad);
-//        t1.start();
+        DataBuffer.g=(Graphics2D) whiteBroad.getGraphics();
     }
 
     public void login(){
-       String name = showInputDialog(null, "请输入姓名");
-       User user = new User(name);
+        String name = showInputDialog(null, "请输入姓名");
+        User user = new User(name);
+        Response response;
         try {
             Request request = new Request();
             request.setAction("Login");
             request.setAttribute("user",user);
-            ClientUtil.sendTextRequest(request);
+            response = ClientUtil.sendTextRequest(request);
+            DataBuffer.currentUser = new User(name);
+            DataBuffer.onlineUsers = (List<User>)response.getData("onlineUsers");
+            DataBuffer.ellipseList = (ArrayList<Ellipse>) response.getData("Ellipse");
+            DataBuffer.LineList = (ArrayList<Line>) response.getData("Line");
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(0);
         }
-       DataBuffer.currentUser = new User(name);
+
     }
 
     // 界面初始化方法
@@ -86,13 +92,6 @@ public class ClientFrame extends JFrame {
 
         whiteBroadPane.add(whiteBroad);
 
-//        JSplitPane splitPane1 = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-//                drawUtilPane, whiteBroadPane);
-//        splitPane1.setDividerLocation(55);
-//        splitPane1.setEnabled(false);
-//        splitPane1.setDividerSize(0);
-//
-//        splitPane1.setOneTouchExpandable(false);
 
         drawPane.add(whiteBroadPane);
 
@@ -110,8 +109,10 @@ public class ClientFrame extends JFrame {
         JPanel btn2Panel = new JPanel();
         btn2Panel.setLayout(new FlowLayout(FlowLayout.RIGHT));
         this.add(btn2Panel, BorderLayout.SOUTH);
+        rybqBtn = new JCheckBox("私聊老师");
         JButton closeBtn = new JButton("关闭");
         closeBtn.setToolTipText("退出整个程序");
+        btn2Panel.add(rybqBtn);
         btn2Panel.add(closeBtn);
         JButton submitBtn = new JButton("发送");
         submitBtn.setToolTipText("按Enter键发送消息");
@@ -125,7 +126,9 @@ public class ClientFrame extends JFrame {
 
 
         //发送panel
-        JPanel sendPanel = new JPanel();
+        JPanel sendPanel = new JPanel();        //私聊按钮
+
+
         sendPanel.setLayout(new BorderLayout());
         sendPanel.add(new JScrollPane(sendArea,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -186,8 +189,14 @@ public class ClientFrame extends JFrame {
             JOptionPane.showMessageDialog(ClientFrame.this, "不能发送空消息!",
                     "不能发送", JOptionPane.ERROR_MESSAGE);
         } else { //发送
-            User selectedUser = (User)onlineList.getSelectedValue();
+//            User selectedUser = (User)onlineList.getSelectedValue();
             Message msg = new Message();
+
+            if(rybqBtn.isSelected()){
+                msg.setToTeacher(true);
+            }else {
+                msg.setToTeacher(false);
+            }
 
             msg.setFromUser(DataBuffer.currentUser);
             msg.setSendTime(new Date());
@@ -201,14 +210,20 @@ public class ClientFrame extends JFrame {
             sb2.append(" ").append(df.format(msg.getSendTime())).append(" ")
                     .append("你 ");
 
-            sb.append("对大家说");
-            sb2.append("对大家说");
+            if(rybqBtn.isSelected()){
+                sb.append("私信你说");
+            }else {
+                sb.append("对大家说");
+            }
 
+
+            sb2.append("对大家说");
 
             sb.append("\n  ").append(content).append("\n");
             sb2.append("\n  ").append(content).append("\n");
             msg.setMessage(sb.toString());
 
+//            msg
             try {
                 Request request = new Request();
                 request.setAction("chat");

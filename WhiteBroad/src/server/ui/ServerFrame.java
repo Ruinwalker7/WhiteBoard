@@ -9,6 +9,7 @@ import server.ServerUtil;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.text.DateFormat;
@@ -27,6 +28,8 @@ public class ServerFrame extends JFrame {
     public static JTextArea sendArea;
     /** 在线用户列表 */
     public static JList onlineList;
+    /** 准备发送的文件 */
+    public static FileInfo sendFile;
     JButton drawLine;
     JButton drawOval;
     JButton drawArc;
@@ -34,6 +37,11 @@ public class ServerFrame extends JFrame {
     JButton jb2;
     JButton jb1;
     JButton jb3;
+    JButton jb4;
+    JButton jb5;
+    JButton jb6;
+    JButton clearBtn;
+    JButton fileBtn;
     public ServerFrame(){
         init();
         setVisible(true);
@@ -98,17 +106,38 @@ public class ServerFrame extends JFrame {
         jb2 = new JButton();
         jb1 = new JButton();
         jb3 = new JButton();
+        jb4 = new JButton();
+        jb5 = new JButton();
+        jb6 = new JButton();
+        fileBtn = new JButton("文件");
+        clearBtn = new JButton("清除");
 
-        jb1.setSize(30, 30);
-        jb2.setSize(30, 30);
-        jb3.setSize(30, 30);
+        jb1.setSize(40, 40);
+        jb2.setSize(40, 40);
+        jb3.setSize(40, 40);
         setIcon(this.getClass().getResource("/").getPath()+"\\image\\Black.png",jb1,30,30);
         setIcon(this.getClass().getResource("/").getPath()+"\\image\\Blue.png",jb2,30,30);
         setIcon(this.getClass().getResource("/").getPath()+"\\image\\Red.png",jb3,30,30);
+        jb1.setBorder(null);
+        jb2.setBorder(null);
+        jb3.setBorder(null);
         jb1.setContentAreaFilled(false);//除去默认的背景填充
         jb2.setContentAreaFilled(false);//除去默认的背景填充
         jb3.setContentAreaFilled(false);//除去默认的背景填充
 
+        jb4.setSize(40, 40);
+        jb5.setSize(40, 40);
+        jb6.setSize(40, 40);
+        setIcon(this.getClass().getResource("/").getPath()+"\\image\\Black.png",jb4,40,40);
+        setIcon(this.getClass().getResource("/").getPath()+"\\image\\mid.png",jb5,40,40);
+        setIcon(this.getClass().getResource("/").getPath()+"\\image\\tiny.png",jb6,40,40);
+        jb4.setBorder(null);
+        jb5.setBorder(null);
+        jb6.setBorder(null);
+
+        jb4.setContentAreaFilled(false);//除去默认的背景填充
+        jb5.setContentAreaFilled(false);//除去默认的背景填充
+        jb6.setContentAreaFilled(false);//除去默认的背景填充
 
         JPanel drawUtilPane = new JPanel();
 
@@ -120,9 +149,6 @@ public class ServerFrame extends JFrame {
 
         drawUtilPane.setBackground(new Color(252,252,252));
 
-        JLabel label = new JLabel("粗细：");
-        //创建JTextField，16表示16列，用于JTextField的宽度显示而不是限制字符个数
-        JTextField textField = new JTextField(4);
 
         drawUtilPane.add(drawLine);
         drawUtilPane.add(drawOval);
@@ -131,17 +157,10 @@ public class ServerFrame extends JFrame {
         drawUtilPane.add(jb1);
         drawUtilPane.add(jb2);
         drawUtilPane.add(jb3);
-
-        //内容面板
-        JPanel contentPane = new JPanel();
-        contentPane.setLayout(new FlowLayout());
-
-        //添加控件
-        contentPane.add(label);
-        contentPane.add(textField);
-
-        textField.setText("1");
-        drawUtilPane.add(contentPane);
+        drawUtilPane.add(jb4);
+        drawUtilPane.add(jb5);
+        drawUtilPane.add(jb6);
+        drawUtilPane.add(clearBtn);
 
         whiteBroad = new WhiteBroad();
 
@@ -171,11 +190,14 @@ public class ServerFrame extends JFrame {
         JPanel btn2Panel = new JPanel();
         btn2Panel.setLayout(new FlowLayout(FlowLayout.RIGHT));
         this.add(btn2Panel, BorderLayout.SOUTH);
+        fileBtn.setToolTipText("选择文件发送");
+        btn2Panel.add(fileBtn);
         JButton closeBtn = new JButton("关闭");
         closeBtn.setToolTipText("退出整个程序");
         btn2Panel.add(closeBtn);
         JButton submitBtn = new JButton("发送");
         submitBtn.setToolTipText("按Enter键发送消息");
+
         btn2Panel.add(submitBtn);
 
 
@@ -285,11 +307,85 @@ public class ServerFrame extends JFrame {
             }
         });
 
+        jb4.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                DrawListener.setStroke(6);
+            }
+        });
+
+        jb5.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                DrawListener.setStroke(4);
+            }
+        });
+
+        jb6.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                DrawListener.setStroke(2);
+            }
+        });
+
+        clearBtn.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                clear();
+        }});
+
+        //发送文件
+        fileBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                sendFile();
+            }
+        });
         //关闭服务器事件
         closeBtn.addActionListener(event -> logout());
 
         submitBtn.addActionListener(event -> sendTxtMsg());
+    };
+
+    public void sendFile(){
+        JFileChooser jfc = new JFileChooser();
+        if (jfc.showOpenDialog(ServerFrame.this) == JFileChooser.APPROVE_OPTION) {
+            File file = jfc.getSelectedFile();
+            sendFile = new FileInfo();
+            sendFile.setFromUser(DataBuffer.currentUser);
+            try {
+                sendFile.setSrcName(file.getCanonicalPath());
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            sendFile.setSendTime(new Date());
+
+            Response response = new Response();
+            response.setType(ResponseType.FILE);
+            response.setData("file", sendFile);
+            try {
+                ServerUtil.iteratorResponse(response);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            ServerUtil.appendTxt2MsgListArea("【文件消息】发送文件 ["
+                    + file.getName() + "]\n");
+        }
     }
+
+
+    public void clear(){
+        server.DataBuffer.LineList.clear();
+        server.DataBuffer.ellipseList.clear();
+        whiteBroad.paint(whiteBroad.getGraphics());
+        try {
+            Response response = new Response();
+            response.setType(ResponseType.CLEAR);
+            ServerUtil.iteratorResponse(response);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+}
 
     public void setIcon(String file,JButton com,int x,int y)
     {
@@ -309,7 +405,7 @@ public class ServerFrame extends JFrame {
             java.util.List<User> list = new ArrayList<>();
             //如果设置了ToUser表示私聊，否则群聊
             Message msg = new Message();
-            msg.setToUser(selectedUser);
+//            msg.setToUser(selectedUser);
 
             msg.setFromUser(client.DataBuffer.currentUser);
             msg.setSendTime(new Date());
@@ -361,7 +457,6 @@ public class ServerFrame extends JFrame {
     private void iteratorResponse(Response response) throws IOException {
         for(OnlineClientIOCache onlineUserIO : server.DataBuffer.onlineUserIOCacheMap.values()){
             ObjectOutputStream oos = onlineUserIO.getOos();
-            System.out.println("write to "+oos);
             oos.writeObject(response);
             oos.flush();
         }

@@ -173,10 +173,10 @@ public class BeautyEyeLNFHelper
 	protected static void implLNF()
 	{
 		//自定义窗口的L&F实现
-//		org.jb2011.lnf.beautyeye.ch1_titlepane.__UI__.uiImpl();
-//		//自定义JTabbedPane的L&F实现
+		org.jb2011.lnf.beautyeye.ch1_titlepane.__UI__.uiImpl();
+		//自定义JTabbedPane的L&F实现
 		org.jb2011.lnf.beautyeye.ch2_tab.__UI__.uiImpl();
-////		//自定义按钮的L&F实现
+//		//自定义按钮的L&F实现
 		org.jb2011.lnf.beautyeye.ch3_button.__UI__.uiImpl();
 ////		//各种杂七杂八的设置
 		org.jb2011.lnf.beautyeye.ch_x.__UI__.uiImpl();

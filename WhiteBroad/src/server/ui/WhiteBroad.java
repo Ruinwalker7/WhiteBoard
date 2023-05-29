@@ -1,11 +1,10 @@
 package server.ui;
 
-import common.entity.Circle;
+import common.entity.Ellipse;
 import common.entity.Line;
 import server.DataBuffer;
 
 import javax.swing.*;
-import javax.xml.crypto.Data;
 import java.awt.*;
 
 public class WhiteBroad extends JPanel implements Runnable {
@@ -29,17 +28,19 @@ public class WhiteBroad extends JPanel implements Runnable {
         ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING , RenderingHints.VALUE_ANTIALIAS_ON); //清除锯齿
 
         Graphics2D g2 = (Graphics2D)g;
-//        g2.setStroke(new BasicStroke(15.0f));
+
         for(int i = 0; i< DataBuffer.LineList.size(); i++){ // 重新绘制
             Line line = DataBuffer.LineList.get(i);
             g2.setColor(line.getColor());
-            g2.drawLine(line.x1,line.y1,line.x2,line.y2);
+            g2.setStroke(new BasicStroke(line.getF()));
+            g2.draw(line.getLine2D());
         }
 
-        for(int i = 0; i< DataBuffer.CircleList.size(); i++){ // 重新绘制
-            Circle circle = DataBuffer.CircleList.get(i);
-            g2.setColor(circle.getColor());
-            g2.drawOval(circle.x1,circle.y1,circle.a,circle.b);
+        for(int i = 0; i< DataBuffer.ellipseList.size(); i++){ // 重新绘制
+            Ellipse ellipse = DataBuffer.ellipseList.get(i);
+            g2.setStroke(new BasicStroke(ellipse.getF()));
+            g2.setColor(ellipse.getColor());
+            g2.draw(ellipse.getEllipse2D());
         }
 
 }}

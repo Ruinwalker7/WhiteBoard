@@ -84,7 +84,7 @@ public class BeautyEyeLookAndFeelWin extends WindowsLookAndFeel
 			UIManager.put("MenuItem.border",new BorderUIResource(BorderFactory.createEmptyBorder(1,0,2,0)));//javax.swing.plaf.basic.BasicBorders.MarginBorder;
 			UIManager.put("CheckBoxMenuItem.border",new BorderUIResource(BorderFactory.createEmptyBorder(4,2,4,2)));//javax.swing.plaf.basic.BasicBorders.MarginBorder;
 			UIManager.put("RadioButtonMenuItem.border",new BorderUIResource(BorderFactory.createEmptyBorder(4,0,4,0)));//javax.swing.plaf.basic.BasicBorders.MarginBorder;		
-//			UIManager.put("PopupMenu.border",new BorderUIResource(BorderFactory.createEmptyBorder(20,10,20,10)));//	
+			UIManager.put("PopupMenu.border",new BorderUIResource(BorderFactory.createEmptyBorder(20,10,20,10)));//
 		
 			UIManager.put("CheckBoxMenuItem.checkIcon"
 					,new org.jb2011.lnf.beautyeye.ch9_menu.BECheckBoxMenuItemUI.CheckBoxMenuItemIcon().setUsedForVista(true));//javax.swing.plaf.basic.BasicIconFactory.CheckBoxMenuItemIcon);

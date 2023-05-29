@@ -1,6 +1,6 @@
 package server;
 
-import common.entity.Circle;
+import common.entity.Ellipse;
 import common.entity.Line;
 import common.entity.User;
 import server.model.entity.OnlineUserTableModel;
@@ -33,13 +33,13 @@ public class DataBuffer {
 
     public static ArrayList<Line> LineList;
 
-    public static ArrayList<Circle> CircleList;
+    public static ArrayList<Ellipse> ellipseList;
 
 
     static{
         LineList = new ArrayList<>();
 
-        CircleList = new ArrayList<>();
+        ellipseList = new ArrayList<>();
 
         onlineUserIOCacheMap = new ConcurrentSkipListMap<>();
         onlineUsersMap = new ConcurrentSkipListMap<>();
