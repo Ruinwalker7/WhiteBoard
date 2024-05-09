@@ -67,7 +67,7 @@ public class ClientFrame extends JFrame {
         //设置默认窗体在屏幕中央
         int x = (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth();
         int y = (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight();
-        this.setSize(x-400, y-200);
+        this.setSize(x-400, y-240);
         this.setLocation((x - this.getWidth()) / 2, (y-this.getHeight())/ 2);
 
         //绘画主面板

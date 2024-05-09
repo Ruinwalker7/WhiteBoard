@@ -31,9 +31,7 @@ public class ClientThread extends Thread {
                 if (type == ResponseType.LOGIN) {
                     User newUser = (User)response.getData("loginUser");
                     DataBuffer.onlineUserListModel.addElement(newUser);
-//                    ClientFrame.onlineCountLbl.setText(
-//                            "在线用户列表("+ DataBuffer.onlineUserListModel.getSize() +")");
-                    ClientUtil.appendTxt2MsgListArea("【系统消息】用户"+newUser.getNickname() + "上线了！\n");
+//                    ClientUtil.appendTxt2MsgListArea("【系统消息】用户"+newUser.getNickname() + "上线了！\n");
                 }else if(type == ResponseType.LINE){
                     Line line = (Line)response.getData("shape");
                     DataBuffer.g.setStroke(new BasicStroke(line.getF()));
@@ -48,13 +46,11 @@ public class ClientThread extends Thread {
                     DataBuffer.g.draw(ellipse.getEllipse2D());
                     DataBuffer.ellipseList.add(ellipse);
                 }
-//                else if(type == ResponseType.LOGOUT){
-//                    User newUser = (User)response.getData("logoutUser");
-//                    DataBuffer.onlineUserListModel.removeElement(newUser);
-//                    ClientFrame.onlineCountLbl.setText(
-//                            "在线用户列表("+ DataBuffer.onlineUserListModel.getSize() +")");
+                else if(type == ResponseType.LOGOUT){
+                    User newUser = (User)response.getData("logoutUser");
+                    DataBuffer.onlineUserListModel.removeElement(newUser);
 //                    ClientUtil.appendTxt2MsgListArea("【系统消息】用户"+newUser.getNickname() + "下线了！\n");
-//                }
+                }
                 else if(type == ResponseType.CHAT){ //聊天
                     System.out.println("收到了聊天");
                     Message msg = (Message)response.getData("txtMsg");
@@ -71,9 +67,6 @@ public class ClientThread extends Thread {
                 }else if(type == ResponseType.RECEIVING){
                     receiveFile(response);
                 }
-//                else if(type == ResponseType.REMOVE){
-//                    ClientFrame.remove();
-//                }
             }
         } catch (SocketException e){
             e.printStackTrace();

@@ -6,12 +6,8 @@ import server.DataBuffer;
 import server.OnlineClientIOCache;
 import server.ServerUtil;
 
-import javax.xml.crypto.Data;
 import java.io.*;
 import java.net.Socket;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -181,7 +177,5 @@ public class RequestProcessor implements Runnable {
         oos.writeObject(response);
         oos.flush();
     }
-
-    /** 发送失败会认为下线 */
 
 }

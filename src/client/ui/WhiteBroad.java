@@ -11,8 +11,6 @@ public class WhiteBroad extends JPanel  {
 
     private static final long serialVersionUID = 1141241251L;
 
-//    public void run()   //进程run()方法重写
-//    {
     WhiteBroad(){
         this.setBackground(new Color(255,255,255));//Graphics对象 g的获取
     }
